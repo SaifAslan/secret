@@ -44,7 +44,7 @@ app.get("/login", function(req, res) {
 
 app.post("/login", function(req, res) {
   const username = req.body.username;
-  const password = md5(req.body.password);
+  const password = req.body.password;
 
   USER.findOne({
     userName: username
@@ -52,11 +52,11 @@ app.post("/login", function(req, res) {
     if (err) {
       console.log(err);
     } else {
-      if (foundUser.password === password) {
-        res.render("secrets");
-      } else {
-        console.log(err);
-      }
+      bcrypt.compare(password, foundUser.password, function(err, result) {
+        if (result === true) {
+          res.render("secrets");
+        }
+      });
     }
   });
 });
